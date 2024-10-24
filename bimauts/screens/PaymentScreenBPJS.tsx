@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Alert } from 'react-native';
+import { View, TextInput, Alert } from 'react-native';
 import { Appbar, Button, Card, Title, Paragraph, Text, RadioButton } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { globalStyles } from './styles';
 
 type RootStackParamList = {
   Home: undefined;
@@ -42,40 +43,51 @@ const PaymentScreenBPJS: React.FC<Props> = ({ route, navigation }) => {
     }
   };
 
+  const handleNavigateToConfirmation = () => {
+    if (isIDValid) {
+      navigation.navigate('Confirm', { transaction: { type, bpjsNumber, selectedNominal } });
+    } else {
+      Alert.alert('Error', 'Please ensure all fields are valid.');
+    }
+  };
+
   return (
-    <View style={styles.container}>
+    <View style={globalStyles.container}>
       <Appbar.Header>
         <Appbar.Content title="Pembayaran BPJS" />
         <Appbar.Action icon="menu" onPress={() => {}} />
       </Appbar.Header>
-      <View style={styles.content}>
-        <Card style={styles.card}>
+      <View style={globalStyles.content}>
+        <Card style={globalStyles.card}>
           <Card.Content>
-            <Title style={styles.title}>Pembayaran BPJS</Title>
-            <Text style={styles.label}>Nomor BPJS</Text>
+            <Title style={globalStyles.title}>Pembayaran BPJS</Title>
+            <Text style={globalStyles.label}>Nomor BPJS</Text>
             <TextInput
-              style={styles.input}
+              style={globalStyles.input}
               placeholder="Contoh: 0001122334455"
               value={bpjsNumber}
               onChangeText={(text) => setBpjsNumber(text)}
               onBlur={() => validateBpjsNumber(bpjsNumber)}
               keyboardType="numeric"
             />
-            <View style={styles.infoBox}>
+            <View style={globalStyles.infoBox}>
               <Paragraph>Isi Nomor BPJS yang valid untuk menampilkan menu pembelian.</Paragraph>
             </View>
             {isIDValid && (
               <View>
                 <Text>Pilih Nominal:</Text>
-                <RadioButton.Group onValueChange={value => setSelectedNominal(value)} value={selectedNominal}>
+                <RadioButton.Group
+                  onValueChange={value => setSelectedNominal(value)}
+                  value={selectedNominal}
+                >
                   {bpjsNominals.map(nominal => (
-                    <View key={nominal.value} style={styles.radio}>
+                    <View key={nominal.value} style={globalStyles.radio}>
                       <RadioButton value={nominal.value} />
                       <Text>{nominal.label}</Text>
                     </View>
                   ))}
                 </RadioButton.Group>
-                <Button mode="contained" onPress={() => navigation.navigate('Confirm', { transaction: { bpjsNumber, selectedNominal } })}>
+                <Button mode="contained" onPress={handleNavigateToConfirmation}>
                   Bayar
                 </Button>
               </View>
@@ -86,50 +98,5 @@ const PaymentScreenBPJS: React.FC<Props> = ({ route, navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  content: {
-    padding: 16,
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  card: {
-    width: '100%',
-    maxWidth: 400,
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  label: {
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: '#fff',
-    marginBottom: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 4,
-    borderColor: '#ccc',
-    borderWidth: 1,
-  },
-  radio: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 4,
-  },
-  infoBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    padding: 16,
-    borderRadius: 4,
-  },
-});
 
 export default PaymentScreenBPJS;

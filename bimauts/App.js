@@ -9,7 +9,7 @@ import ConfirmationScreen from './screens/ConfirmationScreen';
 import HistoryScreen from './screens/HistoryScreen';
 import DetailScreen from './screens/DetailScreen';
 import PinScreen from './screens/PinScreen';
-
+import ProfileScreen from './screens/ProfileScreen';
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -24,6 +24,7 @@ export default function App() {
         <Stack.Screen name="History" component={HistoryScreen} />
         <Stack.Screen name="Detail" component={DetailScreen} />
         <Stack.Screen name="Pin" component={PinScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

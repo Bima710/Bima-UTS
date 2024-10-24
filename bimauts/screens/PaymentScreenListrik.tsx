@@ -75,7 +75,10 @@ const PaymentScreenListrik: React.FC<Props> = ({ route, navigation }) => {
                     </View>
                   ))}
                 </RadioButton.Group>
-                <Button mode="contained" onPress={() => navigation.navigate('Confirm', { transaction: { customerID, selectedNominal } })}>
+                <Button
+                  mode="contained"
+                  onPress={() => navigation.navigate('Confirm', { transaction: { type, customerID, selectedNominal } })}
+                >
                   Bayar
                 </Button>
               </View>

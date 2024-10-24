@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
+import { Card, Title, Paragraph, Text } from 'react-native-paper';
 
 type RootStackParamList = {
   Home: undefined;
@@ -17,13 +18,40 @@ type Props = {
 
 const DetailScreen: React.FC<Props> = ({ route }) => {
   const { transaction } = route.params;
+
   return (
-    <View>
-      <Text>Jenis: {transaction.type}</Text>
-      <Text>Nominal: {transaction.amount}</Text>
-      <Text>Tanggal: {transaction.date}</Text>
+    <View style={styles.container}>
+      <Card>
+        <Card.Content>
+          <Title>Transaction Detail</Title>
+          <Paragraph>Merchant Name</Paragraph>
+          <Paragraph>Merchant Address Line 1</Paragraph>
+          <Paragraph>Merchant Address Line 2</Paragraph>
+          <View style={styles.transactionDetail}>
+            <Text>TERMINAL: REFUND</Text>
+            <Text>MERCHANT: 00005000014972</Text>
+            <Text>TRANSACTION TYPE: {transaction.type}</Text>
+            <Text>NOMINAL: {transaction.amount}</Text>
+            <Text>ID/NUMBER: 1234567890</Text>
+            <Text>TOTAL: Rp 75,000</Text>
+          </View>
+        </Card.Content>
+      </Card>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    padding: 10,
+  },
+  transactionDetail: {
+    marginTop: 10,
+  },
+});
 
 export default DetailScreen;

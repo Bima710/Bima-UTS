@@ -27,21 +27,16 @@ const PinScreen: React.FC<Props> = ({ route, navigation }) => {
   const [error, setError] = useState<boolean>(false);
 
   const validatePin = (pin: string) => {
-    const birthDate = '250495'; // ganti dengan tanggal lahir sesuai
-    if (pin === birthDate || attempts >= 3) {
-      return false;
-    }
-    return true;
+    const birthDate = '250495'; // Replace with your birth date
+    return pin === birthDate || attempts >= 3;
   };
 
   const handlePinSubmit = () => {
-    if (!validatePin(pin)) {
-      setAttempts(attempts + 1);
-      setError(true);
+    setAttempts(prev => prev + 1);
+    if (validatePin(pin)) {
       if (attempts >= 2) {
         Alert.alert('Error', 'Transaksi gagal.');
         navigation.navigate('History', { newTransaction: { ...transaction, status: 'Gagal' } });
-        return;
       } else {
         Alert.alert('Error', 'PIN salah. Silahkan coba lagi.');
       }
@@ -49,6 +44,7 @@ const PinScreen: React.FC<Props> = ({ route, navigation }) => {
       navigation.navigate('History', { newTransaction: { ...transaction, status: 'Berhasil' } });
     }
     setPin('');
+    setError(true);
   };
 
   return (
