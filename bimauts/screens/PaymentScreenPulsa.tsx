@@ -6,54 +6,41 @@ import { RouteProp } from '@react-navigation/native';
 
 type RootStackParamList = {
   Home: undefined;
-  Payment: { type: string };
+  PaymentPulsa: { type: string };
   Confirm: { transaction: any };
-  History: { newTransaction: any };
-  Detail: { transaction: any };
-  Pin: { transaction: any };
 };
 
-type PaymentScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Payment'>;
-type PaymentScreenRouteProp = RouteProp<RootStackParamList, 'Payment'>;
+type PaymentScreenNavigationProp = StackNavigationProp<RootStackParamList, 'PaymentPulsa'>;
+type PaymentScreenRouteProp = RouteProp<RootStackParamList, 'PaymentPulsa'>;
 
 type Props = {
   route: PaymentScreenRouteProp;
   navigation: PaymentScreenNavigationProp;
 };
 
-const pulsaOptions = [
-  { amount: '10,000', price: 'Rp10,000' },
-  { amount: '20,000', price: 'Rp20,000' },
-  { amount: '50,000', price: 'Rp50,000' },
+const pulsaNominals = [
+  { label: 'Rp10,000 (Pulsa)', value: '10000', type: 'Pulsa' },
+  { label: 'Rp25,000 (Pulsa)', value: '25000', type: 'Pulsa' },
+  { label: 'Rp50,000 (Pulsa)', value: '50000', type: 'Pulsa' },
+  { label: 'Rp75,000 (Pulsa)', value: '75000', type: 'Pulsa' },
+  { label: 'Rp10,000 (Data - 1GB, 7 Days)', value: '10000', type: 'Data', quota: '1GB', duration: '7 Days' },
+  { label: 'Rp25,000 (Data - 2GB, 14 Days)', value: '25000', type: 'Data', quota: '2GB', duration: '14 Days' },
+  { label: 'Rp50,000 (Data - 5GB, 30 Days)', value: '50000', type: 'Data', quota: '5GB', duration: '30 Days' },
+  { label: 'Rp75,000 (Data - 10GB, 30 Days)', value: '75000', type: 'Data', quota: '10GB', duration: '30 Days' },
 ];
-
-const dataOptions = [
-  { data: '1GB', price: 'Rp10,000', validity: '7 days' },
-  { data: '5GB', price: 'Rp50,000', validity: '30 days' },
-  { data: '10GB', price: 'Rp90,000', validity: '30 days' },
-];
-
-const validatePhoneNumber = (phone: string) => {
-  return /^08[0-9]{10,12}$/.test(phone) && [
-    '0811', '0812', '0813', '0821', '0822', '0823', '0852', '0853', '0851',
-    '0814', '0815', '0816', '0855', '0856', '0857', '0858', '0817', '0818',
-    '0819', '0859', '0877', '0878', '0896', '0897', '0898', '0899', '0881',
-    '0882', '0883', '0884', '0885', '0886', '0887', '0888', '0889'
-  ].includes(phone.substring(0, 4));
-};
 
 const PaymentScreenPulsa: React.FC<Props> = ({ route, navigation }) => {
   const { type } = route.params;
   const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [isPhoneValid, setIsPhoneValid] = useState<boolean>(false);
-  const [selectedOption, setSelectedOption] = useState<string>('pulsa');
-  const [selectedNominal, setSelectedNominal] = useState<string>('');
+  const [isPhoneNumberValid, setIsPhoneNumberValid] = useState<boolean>(false);
+  const [selectedNominal, setSelectedNominal] = useState<string>('10000');
+  const [isDataOption, setIsDataOption] = useState<boolean>(false);
 
-  const handlePhoneBlur = () => {
-    const isValid = validatePhoneNumber(phoneNumber);
-    setIsPhoneValid(isValid);
+  const validatePhoneNumber = (num: string) => {
+    const isValid = /^08[0-9]{9,12}$/.test(num);
+    setIsPhoneNumberValid(isValid);
     if (!isValid) {
-      Alert.alert('Error', 'Nomor telepon tidak valid.');
+      Alert.alert('Error', 'Nomor tidak valid. Harus dimulai dengan 08 dan maksimal 13 digit.');
     }
   };
 
@@ -70,50 +57,34 @@ const PaymentScreenPulsa: React.FC<Props> = ({ route, navigation }) => {
             <Text style={styles.label}>Nomor Ponsel</Text>
             <TextInput
               style={styles.input}
-              placeholder="Contoh : 082370323318"
+              placeholder="Contoh: 082370323318"
               value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              onBlur={handlePhoneBlur}
+              onChangeText={(text) => setPhoneNumber(text)}
+              onBlur={() => validatePhoneNumber(phoneNumber)}
               keyboardType="numeric"
             />
             <View style={styles.buttonGroup}>
-              <Button
-                mode={selectedOption === 'pulsa' ? 'contained' : 'outlined'}
-                onPress={() => setSelectedOption('pulsa')}
-                style={styles.button}
-              >
+              <Button mode={!isDataOption ? 'contained' : 'outlined'} onPress={() => setIsDataOption(false)} style={styles.button}>
                 Isi Pulsa
               </Button>
-              <Button
-                mode={selectedOption === 'data' ? 'contained' : 'outlined'}
-                onPress={() => setSelectedOption('data')}
-                style={styles.button}
-              >
+              <Button mode={isDataOption ? 'contained' : 'outlined'} onPress={() => setIsDataOption(true)} style={styles.button}>
                 Paket Data
               </Button>
             </View>
-            {isPhoneValid && (
+            {isPhoneNumberValid && (
               <View>
-                {selectedOption === 'pulsa' ? (
-                  <RadioButton.Group onValueChange={value => setSelectedNominal(value)} value={selectedNominal}>
-                    {pulsaOptions.map(option => (
-                      <View key={option.amount} style={styles.radio}>
-                        <RadioButton value={`${option.amount},${option.price}`} />
-                        <Text>{`${option.amount} - ${option.price}`}</Text>
+                <Text>Pilih Nominal:</Text>
+                <RadioButton.Group onValueChange={value => setSelectedNominal(value)} value={selectedNominal}>
+                  {pulsaNominals
+                    .filter(nominal => (isDataOption ? nominal.type === 'Data' : nominal.type === 'Pulsa'))
+                    .map(nominal => (
+                      <View key={nominal.value} style={styles.radio}>
+                        <RadioButton value={nominal.value} />
+                        <Text>{nominal.label}</Text>
                       </View>
                     ))}
-                  </RadioButton.Group>
-                ) : (
-                  <RadioButton.Group onValueChange={value => setSelectedNominal(value)} value={selectedNominal}>
-                    {dataOptions.map(option => (
-                      <View key={option.data} style={styles.radio}>
-                        <RadioButton value={`${option.data},${option.price},${option.validity}`} />
-                        <Text>{`${option.data} - ${option.price} - ${option.validity}`}</Text>
-                      </View>
-                    ))}
-                  </RadioButton.Group>
-                )}
-                <Button mode="contained" onPress={() => navigation.navigate('Confirm', { transaction: { type, phoneNumber, selectedOption, selectedNominal } })}>
+                </RadioButton.Group>
+                <Button mode="contained" onPress={() => navigation.navigate('Confirm', { transaction: { type, phoneNumber, selectedNominal } })}>
                   Bayar
                 </Button>
               </View>
@@ -168,13 +139,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 4,
-  },
-  infoBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    padding: 16,
-    borderRadius: 4,
   },
 });
 
