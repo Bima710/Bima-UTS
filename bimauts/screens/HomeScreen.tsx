@@ -6,7 +6,9 @@ import { RouteProp } from '@react-navigation/native';
 
 type RootStackParamList = {
   Home: undefined;
-  Payment: { type: string };
+  PaymentPulsa: { type: string };
+  PaymentBPJS: { type: string };
+  PaymentListrik: { type: string };
   History: undefined;
   Detail: { transaction: any };
 };
@@ -59,13 +61,13 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           </Card.Content>
         </Card>
         <View style={styles.transactionButtons}>
-          <Button icon="cellphone" mode="contained" onPress={() => navigation.navigate('Payment', { type: 'Pulsa' })}>
+          <Button icon="cellphone" mode="contained" onPress={() => navigation.navigate('PaymentPulsa', { type: 'Pulsa' })}>
             Pulsa/Data
           </Button>
-          <Button icon="flash" mode="contained" onPress={() => navigation.navigate('Payment', { type: 'Token Listrik' })}>
+          <Button icon="flash" mode="contained" onPress={() => navigation.navigate('PaymentListrik', { type: 'Token Listrik' })}>
             Listrik
           </Button>
-          <Button icon="shield" mode="contained" onPress={() => navigation.navigate('Payment', { type: 'BPJS' })}>
+          <Button icon="shield" mode="contained" onPress={() => navigation.navigate('PaymentBPJS', { type: 'BPJS' })}>
             BPJS
           </Button>
         </View>
@@ -83,7 +85,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       <Appbar style={styles.bottom}>
         <Appbar.Action icon="home" onPress={() => navigation.navigate('Home')} />
         <Appbar.Action icon="history" onPress={() => navigation.navigate('History')} />
-        <Appbar.Action icon="wallet" onPress={() => navigation.navigate({ name: 'Payment', params: { type: 'default' } })} />
+        <Appbar.Action icon="wallet" onPress={() => navigation.navigate('PaymentPulsa', { type: 'Default' })} />
         <Appbar.Action icon="bell" onPress={() => {}} />
         <Appbar.Action icon="account" onPress={() => {}} />
       </Appbar>
