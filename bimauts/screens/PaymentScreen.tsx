@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Alert, StyleSheet, Button } from 'react-native';
+import { RadioButton } from 'react-native-paper';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
@@ -20,10 +21,17 @@ type Props = {
   navigation: PaymentScreenNavigationProp;
 };
 
+const bpjsNominals = [
+  { label: 'Rp50,000', value: '50000' },
+  { label: 'Rp100,000', value: '100000' },
+  { label: 'Rp150,000', value: '150000' },
+  { label: 'Rp200,000', value: '200000' },
+];
+
 const PaymentScreen: React.FC<Props> = ({ route, navigation }) => {
   const { type } = route.params;
   const [number, setNumber] = useState<string>('');
-  const [amount, setAmount] = useState<string>('');
+  const [amount, setAmount] = useState<string>('50000'); // Default value
   const [transactions, setTransactions] = useState<any[]>([]);
 
   const validateNumber = (num: string) => {
@@ -75,13 +83,17 @@ const PaymentScreen: React.FC<Props> = ({ route, navigation }) => {
         style={styles.input}
       />
       {type === 'BPJS' && (
-        <TextInput
-          placeholder="Nominal (kelipatan Rp50.000)"
-          value={amount}
-          onChangeText={setAmount}
-          keyboardType="numeric"
-          style={styles.input}
-        />
+        <View>
+          <Text>Pilih Nominal:</Text>
+          <RadioButton.Group onValueChange={value => setAmount(value)} value={amount}>
+            {bpjsNominals.map(nominal => (
+              <View key={nominal.value} style={styles.radio}>
+                <RadioButton value={nominal.value} />
+                <Text>{nominal.label}</Text>
+              </View>
+            ))}
+          </RadioButton.Group>
+        </View>
       )}
       <Button title="Bayar" onPress={handlePayment} />
     </View>
@@ -98,6 +110,11 @@ const styles = StyleSheet.create({
     padding: 8,
     marginVertical: 8,
     borderRadius: 4,
+  },
+  radio: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 4,
   },
 });
 

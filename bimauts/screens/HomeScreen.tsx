@@ -83,7 +83,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       <Appbar style={styles.bottom}>
         <Appbar.Action icon="home" onPress={() => navigation.navigate('Home')} />
         <Appbar.Action icon="history" onPress={() => navigation.navigate('History')} />
-        <Appbar.Action icon="wallet" onPress={() => navigation.navigate('Payment')} />
+        <Appbar.Action icon="wallet" onPress={() => navigation.navigate({ name: 'Payment', params: { type: 'default' } })} />
         <Appbar.Action icon="bell" onPress={() => {}} />
         <Appbar.Action icon="account" onPress={() => {}} />
       </Appbar>
