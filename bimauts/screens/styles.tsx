@@ -1,14 +1,16 @@
 import { StyleSheet } from 'react-native';
 
 export const globalStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
   content: {
     padding: 16,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  
-
   bannerCard: {
     marginBottom: 8,
     width: 300,
@@ -34,6 +36,7 @@ export const globalStyles = StyleSheet.create({
   card: {
     width: '100%',
     maxWidth: 400,
+    marginVertical: 8,
   },
   title: {
     textAlign: 'center',
@@ -90,30 +93,6 @@ export const globalStyles = StyleSheet.create({
     marginTop: 8,
     backgroundColor: 'red',
   },
-  
-container: {
-
-  flex: 1,
-
-  backgroundColor: '#f5f5f5',
-
-},
-
-containerDark: {
-
-  flex: 1,
-
-  backgroundColor: '#000000',
-
-},
-
-containerLight: {
-
-  flex: 1,
-
-  backgroundColor: '#ffffff',
-
-},
   transactionButtons: {
 
     flexDirection: 'row',

@@ -12,16 +12,16 @@ interface Props {
   navigation: HistoryScreenNavigationProp;
 }
 
-const HistoryScreen = ({ navigation }: Props) => {
-  interface Transaction {
-    id: string | number;
-    type: string;
-    phoneNumber?: string;
-    customerID?: string;
-    bpjsNumber?: string;
-    selectedNominal: string;
-  }
+interface Transaction {
+  id: string | number;
+  type: string;
+  phoneNumber?: string;
+  customerID?: string;
+  bpjsNumber?: string;
+  selectedNominal: string;
+}
 
+const HistoryScreen: React.FC<Props> = ({ navigation }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -29,7 +29,11 @@ const HistoryScreen = ({ navigation }: Props) => {
     try {
       const storedTransactions = await AsyncStorage.getItem('transactions');
       if (storedTransactions) {
-        setTransactions(JSON.parse(storedTransactions));
+        const parsedTransactions = JSON.parse(storedTransactions).map((transaction: Transaction, index: number) => ({
+          ...transaction,
+          id: transaction.id ? transaction.id : index.toString()
+        }));
+        setTransactions(parsedTransactions);
       }
     } catch (error) {
       console.error('Failed to load transactions', error);
@@ -56,9 +60,9 @@ const HistoryScreen = ({ navigation }: Props) => {
   const renderItem = ({ item }: { item: Transaction }) => (
     <Card style={globalStyles.card}>
       <Card.Content>
-        <Text>Jenis: {item.type}</Text>
-        <Text>Nomor: {item.phoneNumber || item.customerID || item.bpjsNumber}</Text>
-        <Text>Nominal: Rp {parseInt(item.selectedNominal).toLocaleString()}</Text>
+        <Text>Jenis: {item.type || 'N/A'}</Text>
+        <Text>Nomor: {item.phoneNumber || item.customerID || item.bpjsNumber || 'N/A'}</Text>
+        <Text>Nominal: Rp {item.selectedNominal ? parseInt(item.selectedNominal).toLocaleString() : '0'}</Text>
         <Button onPress={() => navigation.navigate('Detail', { transaction: item })}>Detail</Button>
         <Button onPress={() => deleteTransaction(item.id)} color="red" style={globalStyles.deleteButton}>Delete</Button>
       </Card.Content>

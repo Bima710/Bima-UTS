@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
@@ -16,11 +16,33 @@ import TransferScreen from './screens/TransferScreen';
 import WithdrawScreen from './screens/WithdrawScreen';
 import MoreScreen from './screens/MoreScreen';
 import ConfirmTransferScreen from './screens/ConfirmTransferScreen';
+import ConfirmWithdrawScreen from './screens/ConfirmWithdrawScreen';
 import { ThemeProvider } from './context/ThemeContext';
+import * as SplashScreen from 'expo-splash-screen';
+
+// Ignore specific warnings in development mode
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs([
+  '[Reanimated] Reduced motion setting is enabled on this device.',
+]);
 
 const Stack = createStackNavigator();
 
 export default function App() {
+  useEffect(() => {
+    async function hideSplash() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+        setTimeout(async () => {
+          await SplashScreen.hideAsync();
+        }, 3000); // Adjust the time as needed
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+    hideSplash();
+  }, []);
+
   return (
     <ThemeProvider>
       <NavigationContainer>
@@ -40,6 +62,7 @@ export default function App() {
           <Stack.Screen name="Withdraw" component={WithdrawScreen} />
           <Stack.Screen name="More" component={MoreScreen} />
           <Stack.Screen name="ConfirmTransfer" component={ConfirmTransferScreen} />
+          <Stack.Screen name="ConfirmWithdraw" component={ConfirmWithdrawScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>

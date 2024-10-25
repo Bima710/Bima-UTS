@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
+import { Camera } from 'expo-camera';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { Appbar, Text } from 'react-native-paper';
+import { Appbar, Button, Text } from 'react-native-paper';
 
 const QRISScreen = () => {
-  const [hasPermission, setHasPermission] = useState(null);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanned, setScanned] = useState(false);
 
   useEffect(() => {
-    const getBarCodeScannerPermissions = async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
+    const getCameraPermissions = async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
     };
 
-    getBarCodeScannerPermissions();
+    getCameraPermissions();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = ({ type, data }: { type: string; data: string }) => {
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    Alert.alert('Bar code with type ' + type + ' and data ' + data + ' has been scanned!');
   };
 
   if (hasPermission === null) {
@@ -32,13 +33,12 @@ const QRISScreen = () => {
     <View style={styles.container}>
       <Appbar.Header>
         <Appbar.Content title="Scan QRIS" />
-        <Appbar.Action icon="menu" onPress={() => {}} />
       </Appbar.Header>
       <BarCodeScanner
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
-      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
+      {scanned && <Button onPress={() => setScanned(false)}>Tap to Scan Again</Button>}
     </View>
   );
 };

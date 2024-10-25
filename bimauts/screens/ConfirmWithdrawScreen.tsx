@@ -1,15 +1,10 @@
 import React from 'react';
-import { View, Alert, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { Appbar, Button, Card, Title, Paragraph } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-type RootStackParamList = {
-  Home: undefined;
-  ConfirmWithdraw: { transaction: any };
-  Pin: { transaction: any };
-};
+import { RootStackParamList } from '../types';
 
 type ConfirmWithdrawScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ConfirmWithdraw'>;
 type ConfirmWithdrawScreenRouteProp = RouteProp<RootStackParamList, 'ConfirmWithdraw'>;
@@ -37,20 +32,14 @@ const ConfirmWithdrawScreen: React.FC<Props> = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Appbar.Header>
-        <Appbar.Content title="Confirm Withdraw" />
-        <Appbar.Action icon="menu" onPress={() => {}} />
+        <Appbar.Content title="Confirm Withdrawal" />
       </Appbar.Header>
       <Card style={styles.card}>
         <Card.Content>
-          <Title style={styles.title}>Confirm Withdraw</Title>
-          <Paragraph>Method: {transaction.method}</Paragraph>
-          {transaction.method === 'ATM' && (
-            <Paragraph>Option: {transaction.option}</Paragraph>
-          )}
-          {transaction.method === 'Minimarket' && (
-            <Paragraph>Token: {transaction.token}</Paragraph>
-          )}
-          <Paragraph>Amount: Rp {transaction.amount}</Paragraph>
+          <Title style={styles.title}>Confirm Withdrawal</Title>
+          <Paragraph>Location: {transaction.selectedLocation}</Paragraph>
+          <Paragraph>Amount: Rp {transaction.amount.toLocaleString()}</Paragraph>
+          {transaction.token && <Paragraph>Token: {transaction.token}</Paragraph>}
           <Button mode="contained" onPress={saveTransaction}>
             Confirm
           </Button>
