@@ -30,29 +30,44 @@ const pulsaNominals = [
   { label: 'Rp75,000 (Data - 10GB, 30 Days)', value: '75000', type: 'Data', quota: '10GB', duration: '30 Days' },
 ];
 
+const operatorPrefixes = {
+  Telkomsel: ['0811', '0812', '0813', '0821', '0822', '0823', '0852', '0853', '0851'],
+  Indosat: ['0814', '0815', '0816', '0855', '0856', '0857', '0858'],
+  XL: ['0817', '0818', '0819', '0859', '0877', '0878'],
+  Three: ['0896', '0897', '0898', '0899'],
+  Smartfren: ['0881', '0882', '0883', '0884', '0885', '0886', '0887', '0888']
+};
+
 const PaymentScreenPulsa: React.FC<Props> = ({ route, navigation }) => {
   const { type } = route.params;
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [isPhoneNumberValid, setIsPhoneNumberValid] = useState<boolean>(false);
   const [selectedNominal, setSelectedNominal] = useState<string>('10000');
   const [isDataOption, setIsDataOption] = useState<boolean>(false);
+  const [operator, setOperator] = useState<string>('');
+  const paymentMethod = 'Dummy Payment Method'; // Placeholder for payment method logic
 
   const validatePhoneNumber = (num: string) => {
     const isValid = /^08[0-9]{9,12}$/.test(num);
     setIsPhoneNumberValid(isValid);
-    if (!isValid) {
+
+    if (isValid) {
+      for (const [op, prefixes] of Object.entries(operatorPrefixes)) {
+        if (prefixes.some(prefix => num.startsWith(prefix))) {
+          setOperator(op);
+          break;
+        }
+      }
+    } else {
+      setOperator('');
       Alert.alert('Error', 'Nomor tidak valid. Harus dimulai dengan 08 dan maksimal 13 digit.');
     }
   };
-
-  const operator = "Telkomsel"; // Placeholder for operator logic
-  const paymentMethod = "Dummy Payment Method"; // Placeholder for payment method logic
 
   return (
     <View style={globalStyles.container}>
       <Appbar.Header>
         <Appbar.Content title="Pulsa & Paket Data" />
-        <Appbar.Action icon="menu" onPress={() => {}} />
       </Appbar.Header>
       <View style={globalStyles.content}>
         <Card style={globalStyles.card}>
@@ -67,6 +82,7 @@ const PaymentScreenPulsa: React.FC<Props> = ({ route, navigation }) => {
               onBlur={() => validatePhoneNumber(phoneNumber)}
               keyboardType="numeric"
             />
+            <Text>Operator: {operator || 'N/A'}</Text>
             <View style={globalStyles.buttonGroup}>
               <Button mode={!isDataOption ? 'contained' : 'outlined'} onPress={() => setIsDataOption(false)} style={globalStyles.button}>
                 Isi Pulsa

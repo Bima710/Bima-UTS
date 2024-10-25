@@ -1,35 +1,63 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Appbar, Card } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { View, FlatList, Alert, StyleSheet } from 'react-native';
+import { Text, Card, Button, Appbar } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { globalStyles } from './styles';
 
-const NotificationScreen = () => {
+interface Notification {
+  id: string;
+  title: string;
+  body: string;
+}
+
+const NotificationScreen: React.FC = () => {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  const loadNotifications = async () => {
+    try {
+      const storedNotifications = await AsyncStorage.getItem('notifications');
+      if (storedNotifications) {
+        setNotifications(JSON.parse(storedNotifications));
+      }
+    } catch (error) {
+      console.error('Failed to load notifications', error);
+    }
+  };
+
+  const deleteNotification = async (id: string) => {
+    try {
+      const updatedNotifications = notifications.filter((notif) => notif.id !== id);
+      setNotifications(updatedNotifications);
+      await AsyncStorage.setItem('notifications', JSON.stringify(updatedNotifications));
+    } catch (error) {
+      console.error('Failed to delete notification', error);
+    }
+  };
+
+  useEffect(() => {
+    loadNotifications();
+  }, []);
+
+  const renderItem = ({ item }: { item: Notification }) => (
+    <Card style={globalStyles.card}>
+      <Card.Content>
+        <Text>{item.title}</Text>
+        <Text>{item.body}</Text>
+        <Button onPress={() => deleteNotification(item.id)} color="red">Delete</Button>
+      </Card.Content>
+    </Card>
+  );
+
   return (
-    <View style={styles.container}>
-      <Appbar.Header>
-        <Appbar.Content title="Notifications" />
-        <Appbar.Action icon="menu" onPress={() => {}} />
-      </Appbar.Header>
-      <Card style={styles.card}>
-        <Card.Content>
-          <Text style={styles.title}>No new notifications</Text>
-        </Card.Content>
-      </Card>
+    <View style={globalStyles.container}>
+      <FlatList
+        data={notifications}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        ListEmptyComponent={<Text>No notifications found.</Text>}
+      />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    padding: 16,
-  },
-  card: {
-    marginVertical: 8,
-  },
-  title: {
-    fontSize: 20,
-  },
-});
 
 export default NotificationScreen;

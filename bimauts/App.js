@@ -20,7 +20,6 @@ import ConfirmWithdrawScreen from './screens/ConfirmWithdrawScreen';
 import { ThemeProvider } from './context/ThemeContext';
 import * as SplashScreen from 'expo-splash-screen';
 
-// Ignore specific warnings in development mode
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs([
   '[Reanimated] Reduced motion setting is enabled on this device.',
@@ -35,7 +34,7 @@ export default function App() {
         await SplashScreen.preventAutoHideAsync();
         setTimeout(async () => {
           await SplashScreen.hideAsync();
-        }, 3000); // Adjust the time as needed
+        }, 3000);
       } catch (e) {
         console.warn(e);
       }

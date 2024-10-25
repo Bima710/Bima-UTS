@@ -2,11 +2,9 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { Card, Title, Paragraph, Text } from 'react-native-paper';
+import { globalStyles } from './styles';
 
 type RootStackParamList = {
-  Home: undefined;
-  Payment: { type: string };
-  History: { newTransaction: any };
   Detail: { transaction: any };
 };
 
@@ -18,40 +16,21 @@ type Props = {
 
 const DetailScreen: React.FC<Props> = ({ route }) => {
   const { transaction } = route.params;
+  const totalHarga = transaction.selectedNominal ? parseInt(transaction.selectedNominal).toLocaleString() : '0';
 
   return (
-    <View style={styles.container}>
-      <Card>
+    <View style={globalStyles.container}>
+      <Card style={globalStyles.card}>
         <Card.Content>
-          <Title>Transaction Detail</Title>
-          <Paragraph>Merchant Name</Paragraph>
-          <Paragraph>Merchant Address Line 1</Paragraph>
-          <Paragraph>Merchant Address Line 2</Paragraph>
-          <View style={styles.transactionDetail}>
-            <Text>TERMINAL: REFUND</Text>
-            <Text>MERCHANT: 00005000014972</Text>
-            <Text>TRANSACTION TYPE: {transaction.type}</Text>
-            <Text>NOMINAL: {transaction.amount}</Text>
-            <Text>ID/NUMBER: 1234567890</Text>
-            <Text>TOTAL: Rp 75,000</Text>
-          </View>
+          <Title style={globalStyles.title}>Transaction Detail</Title>
+          <Paragraph>Transaction type: {transaction.type}</Paragraph>
+          <Paragraph>ID/Number: {transaction.phoneNumber || transaction.customerID || transaction.bpjsNumber}</Paragraph>
+          <Paragraph>Total harga: Rp {totalHarga}</Paragraph>
+          {transaction.token && <Paragraph>Token: {transaction.token}</Paragraph>}
         </Card.Content>
       </Card>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    padding: 10,
-  },
-  transactionDetail: {
-    marginTop: 10,
-  },
-});
 
 export default DetailScreen;

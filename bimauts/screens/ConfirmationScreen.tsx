@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Alert } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { Appbar, Button, Card, Title, Paragraph } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -22,15 +22,25 @@ type Props = {
 
 const ConfirmationScreen: React.FC<Props> = ({ route, navigation }) => {
   const { transaction } = route.params;
-  const { type, phoneNumber, selectedNominal, operator, paymentMethod } = transaction;
+
+  const generateRandomToken = () => {
+    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let token = '';
+    for (let i = 0; i < 16; i++) {
+      token += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return token;
+  };
 
   const saveTransaction = async () => {
     try {
+      const token = generateRandomToken();
       const storedTransactions = await AsyncStorage.getItem('transactions');
       const transactions = storedTransactions ? JSON.parse(storedTransactions) : [];
-      transactions.push(transaction);
+      const newTransaction = { ...transaction, token };
+      transactions.push(newTransaction);
       await AsyncStorage.setItem('transactions', JSON.stringify(transactions));
-      navigation.navigate('Pin', { transaction });
+      navigation.navigate('Pin', { transaction: newTransaction });
     } catch (error) {
       Alert.alert('Error', 'Failed to save transaction');
     }
@@ -40,19 +50,14 @@ const ConfirmationScreen: React.FC<Props> = ({ route, navigation }) => {
     <View style={globalStyles.container}>
       <Appbar.Header>
         <Appbar.Content title="Konfirmasi Pembayaran" />
-        <Appbar.Action icon="menu" onPress={() => {}} />
       </Appbar.Header>
       <View style={globalStyles.content}>
         <Card style={globalStyles.card}>
           <Card.Content>
             <Title style={globalStyles.title}>Konfirmasi Pembayaran</Title>
-            <Paragraph>Jenis: {type}</Paragraph>
-            <Paragraph>Nomor: {phoneNumber}</Paragraph>
-            <Paragraph>Operator: {operator}</Paragraph>
-            <Paragraph>Nominal: Rp {selectedNominal}</Paragraph>
-            <Paragraph>Metode Pembayaran: {paymentMethod}</Paragraph>
-            <Paragraph>Biaya Transaksi: Rp 0</Paragraph>
-            <Paragraph>Total Pembayaran: Rp {selectedNominal}</Paragraph>
+            <Paragraph>Transaction type: {transaction.type}</Paragraph>
+            <Paragraph>ID/Number: {transaction.customerID}</Paragraph>
+            <Paragraph>Total harga: Rp {parseInt(transaction.selectedNominal).toLocaleString()}</Paragraph>
             <Button mode="contained" onPress={saveTransaction}>
               Konfirmasi
             </Button>

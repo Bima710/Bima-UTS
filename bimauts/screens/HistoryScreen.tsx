@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList } from 'react-native';
+import { View, FlatList, Animated } from 'react-native';
 import { Text, Card, Button, Appbar } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { globalStyles } from './styles';
@@ -19,11 +19,13 @@ interface Transaction {
   customerID?: string;
   bpjsNumber?: string;
   selectedNominal: string;
+  token?: string;
 }
 
 const HistoryScreen: React.FC<Props> = ({ navigation }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const animatedValue = new Animated.Value(0);
 
   const loadTransactions = async () => {
     try {
@@ -58,16 +60,26 @@ const HistoryScreen: React.FC<Props> = ({ navigation }) => {
   }, [navigation]);
 
   const renderItem = ({ item }: { item: Transaction }) => (
-    <Card style={globalStyles.card}>
-      <Card.Content>
-        <Text>Jenis: {item.type || 'N/A'}</Text>
-        <Text>Nomor: {item.phoneNumber || item.customerID || item.bpjsNumber || 'N/A'}</Text>
-        <Text>Nominal: Rp {item.selectedNominal ? parseInt(item.selectedNominal).toLocaleString() : '0'}</Text>
-        <Button onPress={() => navigation.navigate('Detail', { transaction: item })}>Detail</Button>
-        <Button onPress={() => deleteTransaction(item.id)} color="red" style={globalStyles.deleteButton}>Delete</Button>
-      </Card.Content>
-    </Card>
+    <Animated.View style={{ opacity: animatedValue }}>
+      <Card style={globalStyles.card}>
+        <Card.Content>
+          <Text>Jenis: {item.type || 'N/A'}</Text>
+          <Text>Nomor: {item.phoneNumber || item.customerID || item.bpjsNumber || 'N/A'}</Text>
+          <Text>Nominal: Rp {item.selectedNominal ? parseInt(item.selectedNominal).toLocaleString() : '0'}</Text>
+          <Button onPress={() => navigation.navigate('Detail', { transaction: item })}>Detail</Button>
+          <Button onPress={() => deleteTransaction(item.id)} color="red" style={globalStyles.deleteButton}>Delete</Button>
+        </Card.Content>
+      </Card>
+    </Animated.View>
   );
+
+  useEffect(() => {
+    Animated.timing(animatedValue, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, [transactions]);
 
   if (loading) {
     return (
@@ -83,7 +95,12 @@ const HistoryScreen: React.FC<Props> = ({ navigation }) => {
         data={transactions}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
-        ListEmptyComponent={<Text>No transactions found.</Text>}
+        ListEmptyComponent={
+          <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+            <Text>Tidak ada Data Transaksi</Text>
+            <Image source={{ uri: 'https://path/to/not_found_image.png' }} style={{ width: 200, height: 200 }} />
+          </View>
+        }
       />
       <Appbar style={globalStyles.bottom}>
         <Appbar.Action icon="home" onPress={() => navigation.navigate('Home')} />

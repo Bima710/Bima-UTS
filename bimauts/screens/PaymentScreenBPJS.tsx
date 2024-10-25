@@ -23,10 +23,11 @@ type Props = {
 };
 
 const bpjsNominals = [
-  { label: 'Rp50,000', value: '50000' },
-  { label: 'Rp100,000', value: '100000' },
-  { label: 'Rp150,000', value: '150000' },
-  { label: 'Rp200,000', value: '200000' },
+  { label: 'Rp50,000 (1 Bulan)', value: '50000', months: 1 },
+  { label: 'Rp100,000 (2 Bulan)', value: '100000', months: 2 },
+  { label: 'Rp150,000 (3 Bulan)', value: '150000', months: 3 },
+  { label: 'Rp200,000 (4 Bulan)', value: '200000', months: 4 },
+  // Add more if needed
 ];
 
 const PaymentScreenBPJS: React.FC<Props> = ({ route, navigation }) => {
@@ -44,18 +45,14 @@ const PaymentScreenBPJS: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const handleNavigateToConfirmation = () => {
-    if (isIDValid) {
-      navigation.navigate('Confirm', { transaction: { type, bpjsNumber, selectedNominal } });
-    } else {
-      Alert.alert('Error', 'Please ensure all fields are valid.');
-    }
+    const selectedMonths = bpjsNominals.find(nominal => nominal.value === selectedNominal)?.months || 1;
+    navigation.navigate('Confirm', { transaction: { type, bpjsNumber, selectedNominal, selectedMonths } });
   };
 
   return (
     <View style={globalStyles.container}>
       <Appbar.Header>
         <Appbar.Content title="Pembayaran BPJS" />
-        <Appbar.Action icon="menu" onPress={() => {}} />
       </Appbar.Header>
       <View style={globalStyles.content}>
         <Card style={globalStyles.card}>
@@ -76,10 +73,7 @@ const PaymentScreenBPJS: React.FC<Props> = ({ route, navigation }) => {
             {isIDValid && (
               <View>
                 <Text>Pilih Nominal:</Text>
-                <RadioButton.Group
-                  onValueChange={value => setSelectedNominal(value)}
-                  value={selectedNominal}
-                >
+                <RadioButton.Group onValueChange={value => setSelectedNominal(value)} value={selectedNominal}>
                   {bpjsNominals.map(nominal => (
                     <View key={nominal.value} style={globalStyles.radio}>
                       <RadioButton value={nominal.value} />

@@ -1,15 +1,40 @@
 import { StyleSheet } from 'react-native';
 
 export const globalStyles = StyleSheet.create({
-  container: {
+  containerLight: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  containerDark: {
+    flex: 1,
+    backgroundColor: '#333',
   },
   content: {
     padding: 16,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  profilePhoto: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 16,
+  },
+  userInfo: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  userName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  userPhone: {
+    fontSize: 16,
+    color: '#666',
+  },
+  languageSwitch: {
+    marginTop: 16,
   },
   bannerCard: {
     marginBottom: 8,
