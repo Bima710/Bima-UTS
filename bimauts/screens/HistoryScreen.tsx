@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
-import { Text, Card, Button } from 'react-native-paper';
+import { View, FlatList } from 'react-native';
+import { Text, Card, Button, Appbar } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { globalStyles } from './styles';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../types'; // Adjust the import path as necessary
 
-import { NavigationProp, ParamListBase } from '@react-navigation/native';
+type HistoryScreenNavigationProp = StackNavigationProp<RootStackParamList, 'History'>;
 
-const HistoryScreen = ({ navigation }: { navigation: NavigationProp<ParamListBase> }) => {
+interface Props {
+  navigation: HistoryScreenNavigationProp;
+}
+
+const HistoryScreen = ({ navigation }: Props) => {
   interface Transaction {
     id: string | number;
     type: string;
@@ -17,6 +23,7 @@ const HistoryScreen = ({ navigation }: { navigation: NavigationProp<ParamListBas
   }
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const loadTransactions = async () => {
     try {
@@ -26,6 +33,8 @@ const HistoryScreen = ({ navigation }: { navigation: NavigationProp<ParamListBas
       }
     } catch (error) {
       console.error('Failed to load transactions', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,20 +58,36 @@ const HistoryScreen = ({ navigation }: { navigation: NavigationProp<ParamListBas
       <Card.Content>
         <Text>Jenis: {item.type}</Text>
         <Text>Nomor: {item.phoneNumber || item.customerID || item.bpjsNumber}</Text>
-        <Text>Nominal: {item.selectedNominal}</Text>
+        <Text>Nominal: Rp {parseInt(item.selectedNominal).toLocaleString()}</Text>
         <Button onPress={() => navigation.navigate('Detail', { transaction: item })}>Detail</Button>
-        <Button onPress={() => deleteTransaction(item.id)} color="red">Delete</Button>
+        <Button onPress={() => deleteTransaction(item.id)} color="red" style={globalStyles.deleteButton}>Delete</Button>
       </Card.Content>
     </Card>
   );
+
+  if (loading) {
+    return (
+      <View style={globalStyles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={globalStyles.container}>
       <FlatList
         data={transactions}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
+        ListEmptyComponent={<Text>No transactions found.</Text>}
       />
+      <Appbar style={globalStyles.bottom}>
+        <Appbar.Action icon="home" onPress={() => navigation.navigate('Home')} />
+        <Appbar.Action icon="history" onPress={() => navigation.navigate('History')} />
+        <Appbar.Action icon="qrcode-scan" onPress={() => navigation.navigate('QRIS')} />
+        <Appbar.Action icon="bell" onPress={() => navigation.navigate('Notifications')} />
+        <Appbar.Action icon="account" onPress={() => navigation.navigate('Profile')} />
+      </Appbar>
     </View>
   );
 };

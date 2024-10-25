@@ -1,10 +1,6 @@
 import { StyleSheet } from 'react-native';
 
 export const globalStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
   content: {
     padding: 16,
     flex: 1,
@@ -94,6 +90,30 @@ export const globalStyles = StyleSheet.create({
     marginTop: 8,
     backgroundColor: 'red',
   },
+  
+container: {
+
+  flex: 1,
+
+  backgroundColor: '#f5f5f5',
+
+},
+
+containerDark: {
+
+  flex: 1,
+
+  backgroundColor: '#000000',
+
+},
+
+containerLight: {
+
+  flex: 1,
+
+  backgroundColor: '#ffffff',
+
+},
   transactionButtons: {
 
     flexDirection: 'row',

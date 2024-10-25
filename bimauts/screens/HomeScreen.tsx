@@ -3,18 +3,8 @@ import { View, TouchableOpacity } from 'react-native';
 import { Appbar, Button, Card, Title, Paragraph } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
 import { globalStyles } from './styles';
-
-type RootStackParamList = {
-  Home: undefined;
-  PaymentPulsa: { type: string };
-  PaymentBPJS: { type: string };
-  PaymentListrik: { type: string };
-  History: undefined;
-  Detail: { transaction: any };
-  Profile: undefined;
-};
+import { RootStackParamList } from '../types';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -61,15 +51,15 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           <Card.Content>
             <Title>Hallo Bima</Title>
             <Paragraph>2024</Paragraph>
-            <Title>Saldo: Rp {balance.toFixed(2)}</Title>
+            <Title>Saldo: Rp {balance.toLocaleString()}</Title>
             <View style={globalStyles.buttonGroup}>
-              <Button icon="swap-horizontal" mode="contained" onPress={() => {}}>
+              <Button icon="swap-horizontal" mode="contained" onPress={() => navigation.navigate('Transfer')}>
                 Transfer
               </Button>
-              <Button icon="cash" mode="contained" onPress={() => {}}>
+              <Button icon="cash" mode="contained" onPress={() => navigation.navigate('Withdraw')}>
                 Tarik Tunai
               </Button>
-              <Button icon="dots-horizontal" mode="contained" onPress={() => {}}>
+              <Button icon="dots-horizontal" mode="contained" onPress={() => navigation.navigate('More')}>
                 More
               </Button>
             </View>
@@ -100,8 +90,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       <Appbar style={globalStyles.bottom}>
         <Appbar.Action icon="home" onPress={() => navigation.navigate('Home')} />
         <Appbar.Action icon="history" onPress={() => navigation.navigate('History')} />
-        <Appbar.Action icon="wallet" onPress={() => navigation.navigate('PaymentPulsa', { type: 'Default' })} />
-        <Appbar.Action icon="bell" onPress={() => {}} />
+        <Appbar.Action icon="qrcode-scan" onPress={() => navigation.navigate('QRIS')} />
+        <Appbar.Action icon="bell" onPress={() => navigation.navigate('Notifications')} />
         <Appbar.Action icon="account" onPress={() => navigation.navigate('Profile')} />
       </Appbar>
     </View>
